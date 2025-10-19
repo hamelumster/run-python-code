@@ -89,7 +89,7 @@ body {
   background: #fff;
 }
 #output {
-  white-space: pre-wrap;
+  white-space: break-spaces;
   word-break: break-word;
 }
 
