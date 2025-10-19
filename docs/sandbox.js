@@ -4,8 +4,9 @@ const copyBtn = document.getElementById('copyBtn');
 const clearCodeBtn = document.getElementById('clearCodeBtn');
 const clearOutBtn = document.getElementById('clearOutBtn');
 const outputEl = document.getElementById('output');
+const stopBtn  = document.getElementById('stopBtn');
 
-let pyodide, editor;
+let pyodide, editor, abortController = null;
 
 // output
 function appendOut(text){
@@ -54,6 +55,9 @@ window.addEventListener('DOMContentLoaded', () => {
     resizeToContent();
   });
   clearOutBtn.addEventListener('click', clearOutput);
+  stopBtn.addEventListener('click', () => {
+  if (abortController) abortController.abort();
+    });
 });
 
 // run code
@@ -62,8 +66,24 @@ async function runCode(){
   try{
     await ensurePyodide();
     const code = editor.getValue();
-    await pyodide.runPythonAsync(code);
+
+    // Stop - block run
+    stopBtn.disabled = false;
+    runBtn.disabled  = true;
+
+    abortController = new AbortController();
+    const signal = abortController.signal;
+
+    await pyodide.runPythonAsync(code, { signal });
   }catch(e){
-    appendOut(`\nTraceback: ${e.message || e}\n`);
+    if (e?.name === 'AbortError'){
+      appendOut('\n[Выполнение остановлено]\n');
+    } else {
+      appendOut(`\nTraceback: ${e.message || e}\n`);
+    }
+  }finally{
+    stopBtn.disabled = true;
+    runBtn.disabled  = false;
+    abortController = null;
   }
 }
