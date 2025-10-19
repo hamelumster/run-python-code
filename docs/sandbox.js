@@ -10,7 +10,10 @@ let editor;
 
 // ---------- output ----------
 function appendOut(text){
-  const normalized = String(text).replace(/\r\n?/g, '\n');
+  const normalized = String(text)
+    .replace(/\r\n?/g, '\n')
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '');
   outputEl.textContent += normalized;
   outputEl.scrollTop = outputEl.scrollHeight;
 }
@@ -31,9 +34,11 @@ function createWorker(){
         workerReady = true;
         break;
       case 'stdout':
-      case 'stderr':
-        appendOut(data);
+      case 'stderr': {
+        const chunk = typeof data === 'string' ? data : String(data);
+        appendOut(chunk.endsWith('\n') ? chunk : chunk + '\n');
         break;
+      }
       case 'error':
         appendOut(`\nTraceback: ${message}\n`);
         cleanupRunState();
