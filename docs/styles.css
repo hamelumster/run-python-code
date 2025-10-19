@@ -125,3 +125,36 @@ body {
   text-align: center;
   border-top: 1px solid var(--line);
 }
+
+/* toolbar */
+.toolbar{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:10px 12px; border-bottom:1px solid var(--line);
+}
+.title{ font-weight:700; color:var(--muted) }
+.tools{ display:flex; gap:8px; align-items:center }
+
+/* icon-button */
+.icon-btn{
+  appearance:none; border:1px solid var(--line);
+  background:#f9fafb;
+  padding:6px; border-radius:12px;
+  cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
+  transition: transform .06s ease, background .15s ease, box-shadow .15s ease, border-color .15s ease;
+  box-shadow: 0 1px 0 rgba(0,0,0,.03);
+}
+.icon-btn:hover{ background:#f3f4f6 }
+.icon-btn:active{ transform: translateY(1px) }
+.icon-btn:focus-visible{ outline:2px solid #93c5fd; outline-offset:2px }
+
+/* Run button */
+.run-btn{
+  appearance:none; border:1px solid transparent;
+  background:#10b981; color:#fff;
+  font-weight:700; padding:6px 14px; border-radius:12px; cursor:pointer;
+  transition: transform .06s ease, filter .15s ease, box-shadow .15s ease;
+  box-shadow: 0 4px 12px rgba(16,185,129,.15);
+}
+.run-btn:hover{ filter:brightness(.96) }
+.run-btn:active{ transform: translateY(1px) }
+.run-btn:focus-visible{ outline:2px solid #34d399; outline-offset:2px }
