@@ -75,7 +75,13 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 14px;
 }
-.panel .CodeMirror { padding: 8px 0; }
+.panel .CodeMirror{ padding: 0; }
+
+.CodeMirror-gutters{
+  background: #f8fafc;
+  border-right: 1px solid var(--line);
+}
+.CodeMirror-linenumber{ color:#94a3b8; }
 
 /* Output in right panel*/
 .prose {
