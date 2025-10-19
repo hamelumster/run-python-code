@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python Sandbox</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js"></script>
+</head>
+<body>
+    <textarea id="code" rows="15" cols="80">
+print("Привет, мир!")
+</textarea><br/>
+<button onclick="runCode()">Run</button>
+
+<script>
+async function runCode() {
+    const code = document.getElementById('code').value;
+    const pyodide = await loadPyodide();
+    try {
+        await pyodide.runPythonAsync(code);
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
+}
+</script>
+</body>
+</html>
