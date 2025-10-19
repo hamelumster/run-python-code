@@ -6,26 +6,61 @@ const clearOutBtn = document.getElementById('clearOutBtn');
 const outputEl = document.getElementById('output');
 const stopBtn  = document.getElementById('stopBtn');
 
-let pyodide, editor, abortController = null;
+let editor;
 
-// output
+// ---------- output ----------
 function appendOut(text){
   outputEl.textContent += text;
   outputEl.scrollTop = outputEl.scrollHeight;
 }
 function clearOutput(){ outputEl.textContent = ""; }
 
-// pyodide
-async function ensurePyodide(){
-  if(!pyodide){
-    pyodide = await loadPyodide();
-    pyodide.setStdout({ batched:s => appendOut(s) });
-    pyodide.setStderr({ batched:s => appendOut(s) });
-  }
-  return pyodide;
+// ---------- Web Worker с Pyodide ----------
+let worker = null;
+let workerReady = false;
+
+function createWorker(){
+  worker = new Worker('./py_worker.js');
+  workerReady = false;
+
+  worker.onmessage = (e) => {
+    const { type, data, message } = e.data || {};
+    switch (type) {
+      case 'ready':
+        workerReady = true;
+        break;
+      case 'stdout':
+      case 'stderr':
+        appendOut(data);
+        break;
+      case 'error':
+        appendOut(`\nTraceback: ${message}\n`);
+        cleanupRunState();
+        break;
+      case 'done':
+        cleanupRunState();
+        break;
+    }
+  };
+
+  // pyodide in worker init
+  worker.postMessage({ type: 'init' });
 }
 
-// — initialization, redactor setup, auto-resize
+function terminateWorker(){
+  if (worker) {
+    worker.terminate();
+    worker = null;
+    workerReady = false;
+  }
+}
+
+function cleanupRunState(){
+  stopBtn.disabled = true;
+  runBtn.disabled  = false;
+}
+
+// ---------- init ----------
 window.addEventListener('DOMContentLoaded', () => {
   editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     mode: 'python',
@@ -45,6 +80,9 @@ window.addEventListener('DOMContentLoaded', () => {
   resizeToContent();
   editor.on('change', resizeToContent);
 
+  // create worker at start
+  createWorker();
+
   // buttons
   runBtn.addEventListener('click', runCode);
   copyBtn.addEventListener('click', async () => {
@@ -55,35 +93,36 @@ window.addEventListener('DOMContentLoaded', () => {
     resizeToContent();
   });
   clearOutBtn.addEventListener('click', clearOutput);
+
+  // stop: kill worker and create new
   stopBtn.addEventListener('click', () => {
-  if (abortController) abortController.abort();
-    });
+    terminateWorker();
+    appendOut('\n[Выполнение остановлено]\n');
+    cleanupRunState();
+    createWorker(); // clear interprener for next run
+  });
 });
 
-// run code
+// ---------- run ----------
 async function runCode(){
   clearOutput();
-  try{
-    await ensurePyodide();
-    const code = editor.getValue();
 
-    // Stop - block run
-    stopBtn.disabled = false;
-    runBtn.disabled  = true;
+  // if no worker - create
+  if (!worker) createWorker();
 
-    abortController = new AbortController();
-    const signal = abortController.signal;
+  // waiting pyodide in worker
+  const waitReady = () => new Promise(resolve => {
+    if (workerReady) return resolve();
+    const iv = setInterval(() => {
+      if (workerReady) { clearInterval(iv); resolve(); }
+    }, 30);
+  });
+  await waitReady();
 
-    await pyodide.runPythonAsync(code, { signal });
-  }catch(e){
-    if (e?.name === 'AbortError'){
-      appendOut('\n[Выполнение остановлено]\n');
-    } else {
-      appendOut(`\nTraceback: ${e.message || e}\n`);
-    }
-  }finally{
-    stopBtn.disabled = true;
-    runBtn.disabled  = false;
-    abortController = null;
-  }
+  // stages
+  stopBtn.disabled = false;
+  runBtn.disabled  = true;
+
+  // code to worker
+  worker.postMessage({ type: 'run', code: editor.getValue() });
 }
