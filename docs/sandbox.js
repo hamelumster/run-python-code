@@ -10,7 +10,8 @@ let editor;
 
 // ---------- output ----------
 function appendOut(text){
-  outputEl.textContent += text;
+  const normalized = String(text).replace(/\r\n?/g, '\n');
+  outputEl.textContent += normalized;
   outputEl.scrollTop = outputEl.scrollHeight;
 }
 function clearOutput(){ outputEl.textContent = ""; }
