@@ -1,25 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Python Sandbox</title>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python Sandbox</title>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js"></script>
+
+  <!-- CodeMirror (редактор) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css">
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/python/python.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/edit/closebrackets.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/display/placeholder.js"></script>
+
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-    <textarea id="code" rows="15" cols="80">
-print("Привет, мир!")
-</textarea><br/>
-<button onclick="runCode()">Run</button>
+  <header class="topbar">
+    <h1>Запуск Python</h1>
+    <div class="actions">
+      <button id="runBtn">Запустить ▷</button>
+      <button id="stopBtn" disabled>Остановить ■</button>
+      <button id="clearOutBtn">Очистить вывод ✕</button>
+    </div>
+  </header>
 
-<script>
-async function runCode() {
-    const code = document.getElementById('code').value;
-    const pyodide = await loadPyodide();
-    try {
-        await pyodide.runPythonAsync(code);
-    } catch (e) {
-        alert("Error: " + e.message);
-    }
-}
-</script>
+  <main class="grid">
+    <section class="panel">
+      <div class="panel-title">Код</div>
+      <textarea id="editor"></textarea>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">Вывод</div>
+      <pre id="output" class="prose" aria-live="polite"></pre>
+    </section>
+  </main>
+
+  <footer class="footnote">
+    Pyodide 0.23.1 в браузере · Никаких серверов — всё локально (только простые скрипты)
+  </footer>
+
+  <script src="./sandbox.js"></script>
 </body>
 </html>
