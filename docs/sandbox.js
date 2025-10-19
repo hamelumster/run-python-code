@@ -34,11 +34,11 @@ window.addEventListener('DOMContentLoaded', () => {
   });
   editor.setValue("");
 
-  const basePad = 16;
+  const basePad = 12;
   const heightForLines = n => (editor.defaultTextHeight() * n + basePad);
 
   function resizeToContent(){
-    const lines = Math.max(10, editor.lineCount());
+    const lines = Math.max(1, editor.lineCount());
     editor.setSize(null, heightForLines(lines));
   }
   resizeToContent();
