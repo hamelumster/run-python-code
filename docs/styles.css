@@ -55,9 +55,9 @@ body {
 .panel {
   display: flex;
   flex-direction: column;
-  min-height: 60vh;
+  min-height: 45vh;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 1px 2px rgba(0,0,0,.03);
@@ -73,10 +73,10 @@ body {
 .CodeMirror {
   height: auto;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 14px;
+  font-size: 16px;
   background:#fff;
 }
-.panel .CodeMirror{ padding: 0; }
+.panel .CodeMirror{ padding: 0px; }
 .CodeMirror-gutters{ background:#f8fafc; border-right:1px solid var(--line); }
 .CodeMirror-linenumber{ color:#94a3b8; }
 
@@ -123,12 +123,33 @@ body {
   border-top: 1px solid var(--line);
 }
 
-/* right-toolbar */
-.toolbar-right .title { display: none; }
-.toolbar, .toolbar-right {
-  display:flex; align-items:center; justify-content:space-between; gap:8px;
-  padding:10px 12px; border-bottom:1px solid var(--line);
+/* right-toolbar 
+font-family: Arial, Helvetica, sans-serif */
+.toolbar-right .title { 
+  display: block; ;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 18px;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif
 }
+.toolbar {
+  display:flex; 
+  align-items:center; 
+  justify-content:flex-end; 
+  gap:8px;
+  padding:10px 12px; 
+  border-bottom:1px solid var(--line);
+}
+.toolbar-right {
+  display:flex; 
+  align-items:center; 
+  justify-content:flex-start; 
+  gap:16px;
+  padding:10px 12px; 
+  border-bottom:1px solid var(--line);
+}
+
 .tools { display:flex; gap:8px; align-items:center; }
 
 /* universal icon button (copy/trash) */
@@ -151,7 +172,7 @@ body {
 /* Run Btn */
 .run-btn{
   appearance:none; border:1px solid transparent;
-  background:#10b981; color:#fff; font-weight:700;
+  background:#10b981; color:#fff; font-weight:500; font-size: medium;
   padding:6px 14px; border-radius:12px; cursor:pointer;
   transition:transform .06s ease, filter .15s ease, box-shadow .15s ease;
   box-shadow:0 4px 12px rgba(16,185,129,.15);
