@@ -72,6 +72,12 @@ window.addEventListener('DOMContentLoaded', () => {
     mode: 'python',
     lineNumbers: true,
     lineWrapping: false,
+
+    indentUnit: 4,
+    tabSize: 4,
+    indentWithTabs: false,
+    smartIndent: true,
+    electricChars: true,
     value: "",
   });
   editor.setValue("");
