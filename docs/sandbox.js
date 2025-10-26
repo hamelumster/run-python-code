@@ -72,13 +72,18 @@ window.addEventListener('DOMContentLoaded', () => {
     mode: 'python',
     lineNumbers: true,
     lineWrapping: false,
-
     indentUnit: 4,
     tabSize: 4,
     indentWithTabs: false,
     smartIndent: true,
     electricChars: true,
     value: "",
+    autoCloseBrackets: true,                  // (1) автозакрытие "(" -> ")"
+    extraKeys: {                              // (3) toggle comment + автодополнение по Ctrl-Space
+      "Ctrl-/": "toggleComment",
+      "Cmd-/": "toggleComment",
+      "Ctrl-Space": "autocomplete"
+    },
   });
   editor.setValue("");
 
