@@ -97,6 +97,48 @@ window.addEventListener('DOMContentLoaded', () => {
   resizeToContent();
   editor.on('change', resizeToContent);
 
+// --- tiny autocomplete like Jupyter: suggest "print" on "pr", etc.
+const PY_WORDS = [
+  "print","input","len","range","int","str","float","list","dict","set","tuple",
+  "for","while","if","elif","else","def","class","return","yield",
+  "import","from","as","with","try","except","finally","True","False","None"
+];
+
+// провайдер подсказок
+function pythonTinyHint(cm) {
+  const cur   = cm.getCursor();
+  const token = cm.getTokenAt(cur);
+  const start = token.start;
+  const end   = cur.ch;
+  const from  = CodeMirror.Pos(cur.line, start);
+  const to    = CodeMirror.Pos(cur.line, end);
+
+  const typed = token.string.slice(0, end - start);
+  // показываем слова, начинающиеся с того, что уже набрано
+  let list = PY_WORDS.filter(w => w.startsWith(typed) && w !== typed);
+
+  // приоритет "print" — сверху (чтобы Enter сразу его взял)
+  list.sort((a,b) => (a==="print" ? -1 : b==="print" ? 1 : a.localeCompare(b)));
+
+  return { list, from, to };
+}
+
+// автопоказ, когда символов в слове >= 2 (например "pr")
+editor.on('inputRead', (cm, change) => {
+  if (!change.text || !change.text[0]) return;
+  if (!/[\w_]/.test(change.text[0])) return;
+  const cur   = cm.getCursor();
+  const token = cm.getTokenAt(cur);
+  const len   = cur.ch - token.start;
+  if (len >= 2) {
+    cm.showHint({
+      hint: pythonTinyHint,
+      completeSingle: false,
+      closeCharacters: /(?:)/
+    });
+  }
+});
+
   // create worker at start
   createWorker();
 
